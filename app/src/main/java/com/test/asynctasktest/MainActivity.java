@@ -3,7 +3,12 @@ package com.test.asynctasktest;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.widget.ListView;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -38,6 +43,7 @@ public class MainActivity extends AppCompatActivity {
         List<NewsBean> newsBeanList = new ArrayList<>();
         try {
             String jsonString = readStream(new URL(url).openStream());
+           Log.d("123",jsonString);
         } catch (IOException e) {
             e.printStackTrace();
         }

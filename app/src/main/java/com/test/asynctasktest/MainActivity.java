@@ -43,7 +43,23 @@ public class MainActivity extends AppCompatActivity {
         List<NewsBean> newsBeanList = new ArrayList<>();
         try {
             String jsonString = readStream(new URL(url).openStream());
-           Log.d("123",jsonString);
+            NewsBean newsBean;
+            JSONObject jsonObject;
+            try {
+                jsonObject = new JSONObject(jsonString);
+                JSONArray jsonArray = jsonObject.getJSONArray("data");
+                for (int i = 0; i < jsonArray.length(); i++) {
+                    jsonObject = jsonArray.getJSONObject(i);
+                    newsBean = new NewsBean();
+                    newsBean.newsTitle = jsonObject.getString("name");
+                    newsBean.newsIconUrl = jsonObject.getString("picSmall");
+                    newsBean.newsContent = jsonObject.getString("description");
+                    newsBeanList.add(newsBean);
+
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }

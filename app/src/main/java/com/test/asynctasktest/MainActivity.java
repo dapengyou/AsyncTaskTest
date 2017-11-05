@@ -31,14 +31,30 @@ public class MainActivity extends AppCompatActivity {
         new NewAsyncTask().execute(url);
     }
 
+    /**
+     * 实现网络的异步访问
+     */
     class NewAsyncTask extends AsyncTask<String, Void, List<NewsBean>> {
 
         @Override
         protected List<NewsBean> doInBackground(String... strings) {
             return getJsonData(strings[0]);
         }
+
+        @Override
+        protected void onPostExecute(List<NewsBean> newsBeen) {
+            super.onPostExecute(newsBeen);
+            NewsAdapter newsAdapter = new NewsAdapter(MainActivity.this, newsBeen);
+            mListView.setAdapter(newsAdapter);
+        }
     }
 
+    /**
+     * 将url对应的JSON格式数据转化为我们所封装的userBean对象
+     *
+     * @param string
+     * @return
+     */
     private List<NewsBean> getJsonData(String string) {
         List<NewsBean> newsBeanList = new ArrayList<>();
         try {
@@ -66,6 +82,12 @@ public class MainActivity extends AppCompatActivity {
         return newsBeanList;
     }
 
+    /**
+     * 通过InputStream解析网页返回的数据
+     *
+     * @param is
+     * @return
+     */
     private String readStream(InputStream is) {
         InputStreamReader isr;
         String result = "";

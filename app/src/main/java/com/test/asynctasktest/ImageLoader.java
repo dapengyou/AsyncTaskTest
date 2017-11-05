@@ -2,6 +2,7 @@ package com.test.asynctasktest;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.Message;
 import android.widget.ImageView;
@@ -62,13 +63,15 @@ public class ImageLoader {
             is = new BufferedInputStream(connection.getInputStream());
             bitmap = BitmapFactory.decodeStream(is);
             connection.disconnect();
-            Thread.sleep(1000);//模拟网络不好的情况
+//            Thread.sleep(1000);//模拟网络不好的情况
             return bitmap;
         } catch (IOException e) {
             e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } finally {
+        }
+// catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
+        finally {
             try {
                 is.close();
             } catch (IOException e) {
@@ -76,5 +79,32 @@ public class ImageLoader {
             }
         }
         return null;
+    }
+
+    public void showImageByAsyncTak(ImageView imageView, String url) {
+        new NewsAsyncTask(imageView,url).execute(url);
+    }
+
+    private class NewsAsyncTask extends AsyncTask<String, Void, Bitmap> {
+        private ImageView mImageView;
+        private String mUrl;
+
+        public NewsAsyncTask(ImageView imageView, String url) {
+            mImageView = imageView;
+            mUrl = url;
+        }
+
+        @Override
+        protected Bitmap doInBackground(String... strings) {
+            return getBitmapFromURl(strings[0]);
+        }
+
+        @Override
+        protected void onPostExecute(Bitmap bitmap) {
+            super.onPostExecute(bitmap);
+            if (mImageView.getTag().equals(mUrl)) {
+                mImageView.setImageBitmap(bitmap);
+            }
+        }
     }
 }

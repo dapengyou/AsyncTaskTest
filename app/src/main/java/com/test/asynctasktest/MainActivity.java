@@ -50,7 +50,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
-     * 将url对应的JSON格式数据转化为我们所封装的userBean对象
+     * 将url对应的JSON格式数据转化为我们所封装的newsBean对象
      *
      * @param string
      * @return

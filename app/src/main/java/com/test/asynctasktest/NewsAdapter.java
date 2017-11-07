@@ -17,10 +17,12 @@ import java.util.List;
 public class NewsAdapter extends BaseAdapter {
     private List<NewsBean> mList;
     private LayoutInflater mInflater;
+    private ImageLoader mImageLoader;
 
     public NewsAdapter(Context context, List<NewsBean> data) {
         mList = data;
         mInflater = LayoutInflater.from(context);
+        mImageLoader = new ImageLoader();
     }
 
     @Override
@@ -56,7 +58,9 @@ public class NewsAdapter extends BaseAdapter {
         String url = mList.get(i).getNewsIconUrl();
         viewHolder.mIvIcon.setTag(url);//使得图片对应
 //        new ImageLoader().showImageByThread(viewHolder.mIvIcon, url);
-        new ImageLoader().showImageByAsyncTak(viewHolder.mIvIcon, url);
+        //这样写每次都创建了一个新的LruCache
+//        new ImageLoader().showImageByAsyncTak(viewHolder.mIvIcon, url);
+        mImageLoader.showImageByAsyncTak(viewHolder.mIvIcon, url);
         viewHolder.mTvTitle.setText(mList.get(i).getNewsTitle());
         viewHolder.mTvContent.setText(mList.get(i).getNewsContent());
         return view;

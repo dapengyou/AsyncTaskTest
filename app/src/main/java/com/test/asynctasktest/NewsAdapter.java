@@ -61,6 +61,7 @@ public class NewsAdapter extends BaseAdapter {
         //这样写每次都创建了一个新的LruCache
 //        new ImageLoader().showImageByAsyncTak(viewHolder.mIvIcon, url);
         mImageLoader.showImageByAsyncTak(viewHolder.mIvIcon, url);
+        new ImageLoader().showImageByThread(viewHolder.mIvIcon, url);
         viewHolder.mTvTitle.setText(mList.get(i).getNewsTitle());
         viewHolder.mTvContent.setText(mList.get(i).getNewsContent());
         return view;

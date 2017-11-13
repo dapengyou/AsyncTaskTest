@@ -101,15 +101,13 @@ public class ImageLoader {
             is = new BufferedInputStream(connection.getInputStream());
             bitmap = BitmapFactory.decodeStream(is);
             connection.disconnect();
-//            Thread.sleep(1000);//模拟网络不好的情况
+            Thread.sleep(1000);//模拟网络不好的情况
             return bitmap;
         } catch (IOException e) {
             e.printStackTrace();
-        }
-// catch (InterruptedException e) {
-//            e.printStackTrace();
-//        }
-        finally {
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } finally {
             try {
                 is.close();
             } catch (IOException e) {
@@ -118,6 +116,8 @@ public class ImageLoader {
         }
         return null;
     }
+
+
 
     public void showImageByAsyncTak(ImageView imageView, String url) {
         //从缓存中取出对应的图片

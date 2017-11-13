@@ -4,6 +4,7 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -14,15 +15,23 @@ import java.util.List;
  * Created by lady_zhou on 2017/10/29.
  */
 
-public class NewsAdapter extends BaseAdapter {
+public class NewsAdapter extends BaseAdapter implements AbsListView.OnScrollListener {
     private List<NewsBean> mList;
     private LayoutInflater mInflater;
     private ImageLoader mImageLoader;
+    private int mStart, mEnd;
+
+    public static String[] URLS;
 
     public NewsAdapter(Context context, List<NewsBean> data) {
         mList = data;
         mInflater = LayoutInflater.from(context);
         mImageLoader = new ImageLoader();
+
+        URLS = new String[data.size()];
+        for (int i = 0; i < data.size(); i++) {
+            URLS[i] = data.get(i).newsIconUrl;//将图片的url转到了静态的数组中
+        }
     }
 
     @Override
@@ -65,6 +74,23 @@ public class NewsAdapter extends BaseAdapter {
         viewHolder.mTvTitle.setText(mList.get(i).getNewsTitle());
         viewHolder.mTvContent.setText(mList.get(i).getNewsContent());
         return view;
+    }
+
+    @Override
+    public void onScrollStateChanged(AbsListView absListView, int i) {
+        //滚动状态是停止
+        if (i == SCROLL_STATE_IDLE) {
+            //加载可见项
+        } else {
+            //停止加载
+        }
+    }
+
+    @Override
+    public void onScroll(AbsListView absListView, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+        //firstVisibleItem第一个可见元素，visibleItemCount可见元素的长度
+        mStart = firstVisibleItem;
+        mEnd = firstVisibleItem + visibleItemCount;
     }
 
     class ViewHolder {

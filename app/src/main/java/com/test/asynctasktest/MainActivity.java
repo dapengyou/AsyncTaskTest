@@ -44,7 +44,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(List<NewsBean> newsBeen) {
             super.onPostExecute(newsBeen);
-            NewsAdapter newsAdapter = new NewsAdapter(MainActivity.this, newsBeen);
+            NewsAdapter newsAdapter = new NewsAdapter(MainActivity.this, newsBeen, mListView);
             mListView.setAdapter(newsAdapter);
         }
     }

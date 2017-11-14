@@ -7,12 +7,15 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.LruCache;
 import android.widget.ImageView;
+import android.widget.ListView;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Created by lady_zhou on 2017/11/5.
@@ -23,8 +26,16 @@ public class ImageLoader {
     private String mUrl;
     //创建cache
     private LruCache<String, Bitmap> mCaches;
+    //同过tag在listView中寻找imageView
+    private ListView mListView;
+    //创建一个集合去管理AsyncTak的task
+    private Set<NewsAsyncTask> mTask;
 
-    public ImageLoader() {
+    public ImageLoader(ListView listView) {
+        //初始化
+        mListView = listView;
+        mTask = new HashSet<>();
+
         int maxMemory = (int) Runtime.getRuntime().maxMemory();
         int cacheSize = maxMemory / 4;//缓存大小
         mCaches = new LruCache<String, Bitmap>(cacheSize) {
@@ -118,25 +129,36 @@ public class ImageLoader {
     }
 
 
-
     public void showImageByAsyncTak(ImageView imageView, String url) {
         //从缓存中取出对应的图片
         Bitmap bitmap = getBitmapFromCache(url);
         //如果缓存中没有，那么必须去下载
         if (bitmap == null) {
-            new NewsAsyncTask(imageView, url).execute(url);
+            new NewsAsyncTask(url).execute(url);
         } else {
             //因为还在主线程中所以直接使用imageView
             imageView.setImageBitmap(bitmap);
         }
     }
 
+    /**
+     * 取消task中的任务
+     */
+    public void cancelAllTssks() {
+        if (mTask != null) {
+            for (NewsAsyncTask task : mTask) {
+                task.cancel(false);
+            }
+        }
+    }
+
     private class NewsAsyncTask extends AsyncTask<String, Void, Bitmap> {
-        private ImageView mImageView;
+        //        private ImageView mImageView;
         private String mUrl;
 
-        public NewsAsyncTask(ImageView imageView, String url) {
-            mImageView = imageView;
+        public NewsAsyncTask(String url) {
+//        public NewsAsyncTask(ImageView imageView, String url) {
+//            mImageView = imageView;
             mUrl = url;
         }
 
@@ -156,8 +178,37 @@ public class ImageLoader {
         @Override
         protected void onPostExecute(Bitmap bitmap) {
             super.onPostExecute(bitmap);
-            if (mImageView.getTag().equals(mUrl)) {
-                mImageView.setImageBitmap(bitmap);
+//            if (mImageView.getTag().equals(mUrl)) {
+//                mImageView.setImageBitmap(bitmap);
+//            }
+            ImageView imageView = mListView.findViewWithTag(mUrl);
+            if (imageView != null && bitmap != null) {
+                imageView.setImageBitmap(bitmap);
+            }
+            mTask.remove(this);
+        }
+
+    }
+
+    /**
+     * 用来加载从start到end的所有图片
+     *
+     * @param start
+     * @param end
+     */
+    public void loadImages(int start, int end) {
+        for (int i = start; i < end; i++) {
+            String url = NewsAdapter.URLS[i];//获得从start开始的图片的url
+            Bitmap bitmap = getBitmapFromCache(url);
+            //如果缓存中没有，那么必须去下载
+            if (bitmap == null) {
+                NewsAsyncTask task = new NewsAsyncTask(url);
+                task.execute(url);
+                mTask.add(task);
+//                new NewsAsyncTask(imageView, url).execute(url);
+            } else {
+                ImageView imageView = mListView.findViewWithTag(url);
+                imageView.setImageBitmap(bitmap);
             }
         }
     }

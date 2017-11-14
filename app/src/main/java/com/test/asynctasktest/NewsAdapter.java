@@ -24,6 +24,8 @@ public class NewsAdapter extends BaseAdapter implements AbsListView.OnScrollList
 
     public static String[] URLS;
 
+    private boolean mIsFirst;
+
     public NewsAdapter(Context context, List<NewsBean> data, ListView listView) {
         mList = data;
         mInflater = LayoutInflater.from(context);
@@ -34,6 +36,8 @@ public class NewsAdapter extends BaseAdapter implements AbsListView.OnScrollList
             URLS[i] = data.get(i).newsIconUrl;//将图片的url转到了静态的数组中
         }
         listView.setOnScrollListener(this);
+
+        mIsFirst = true;
     }
 
     @Override
@@ -82,7 +86,7 @@ public class NewsAdapter extends BaseAdapter implements AbsListView.OnScrollList
         //滚动状态是停止
         if (i == SCROLL_STATE_IDLE) {
             //加载可见项
-            mImageLoader.loadImages(mStart,mEnd);
+            mImageLoader.loadImages(mStart, mEnd);
         } else {
             //停止加载
             mImageLoader.cancelAllTssks();
@@ -94,6 +98,10 @@ public class NewsAdapter extends BaseAdapter implements AbsListView.OnScrollList
         //firstVisibleItem第一个可见元素，visibleItemCount可见元素的长度
         mStart = firstVisibleItem;
         mEnd = firstVisibleItem + visibleItemCount;
+        if (mIsFirst && visibleItemCount > 0) {
+            mImageLoader.loadImages(mStart, mEnd);
+            mIsFirst = false;
+        }
     }
 
     class ViewHolder {
